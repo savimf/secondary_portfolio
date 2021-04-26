@@ -16,12 +16,13 @@ somente será atualizada, tal que o mesmo não será duplicado.
 Ao finalizar a compra, será apresentado ao usuário o total da mesma de acordo
 com as quantidades inseridas.
 """
-from time import sleep
 from models.produto import Produto
+from models.carrinho import Carrinho
 from utils.helper import coin_float_to_str
+from time import sleep
 
 produtos: list = []
-carrinho: dict = {}
+carrinho: Carrinho = Carrinho()
 
 
 def main() -> None:
@@ -34,19 +35,20 @@ def menu() -> None:
           '==   Savi Shop  ==\n'
           '==================')
 
-    print('Seleciona uma das opções abaixo: \n'
+    print('Selecione uma das opções abaixo: \n'
           '1 - Cadastrar produto\n'
           '2 - Listar produtos\n'
           '3 - Comprar produto\n'
-          '4 - Visualizar carrinho\n'
-          '5 - Fechar pedido\n'
-          '6 - Sair')
+          '4 - Remover produto\n'
+          '5 - Visualizar carrinho\n'
+          '6 - Fechar pedido\n'
+          '7 - Sair')
 
     opcao: int = int(input())
 
-    if opcao in range(1, 6):
+    if opcao in range(1, 7):
         opcoes.get(opcao)()
-    elif opcao == 6:
+    elif opcao == 7:
         print('Obrigado!')
         sleep(2)
         exit(0)
@@ -72,7 +74,6 @@ def cadastrar_produto() -> None:
     menu()
 
 
-
 def listar_produtos() -> None:
     if len(produtos) > 0:
         print('Listagem de produtos\n'
@@ -84,7 +85,7 @@ def listar_produtos() -> None:
             sleep(.5)
     else:
         print('Ainda não há produtos cadastrados.')
-    sleep(1)
+    sleep(.5)
     menu()
 
 
@@ -97,26 +98,42 @@ def comprar_produto() -> None:
                   '----------------------------------')
             sleep(.5)
 
-        codigo: int = int(input('Informe o código do produto a ser' + \
+        codigo: int = int(input('Informe o código do produto a ser ' + \
             'adicionado ao carrinho: '))
 
-        produto: Produto = pegar_prod_por_codigo(codigo)
+        produto: Produto = __pegar_prod_por_codigo(codigo)
 
         if produto:
-            if produto in carrinho.keys():
-                carrinho[produto] += 1
-            else:
-                carrinho[produto] = 1
-
-            print(f'Produto adicionado. {carrinho[produto]} ' + \
-                    'unidade(s) no carrinho.')
-            sleep(1)
-            menu()
+            Carrinho._add_item(produto)
+            sleep(.5)
         else:
             print('Produto não encontrado.')
-            sleep(1)
-            menu()
+    else:
+        print('Ainda não há produtos à venda.')
 
+    sleep(1)
+    menu()
+
+
+def remover_produto() -> None:
+    if len(produtos) > 0:
+        print('====== Produtos Disponíveis ======')
+
+        for produto in produtos:
+            print(f'{produto}\n'
+                  '----------------------------------')
+            sleep(.5)
+
+        codigo: int = int(input('Informe o código do produto a ser ' + \
+            'removido do carrinho: '))
+
+        produto: Produto = __pegar_prod_por_codigo(codigo)
+
+        if produto:
+            Carrinho._rm_item(produto)
+            sleep(.5)
+        else:
+            print('Produto não encontrado.')
     else:
         print('Ainda não há produtos à venda.')
     sleep(1)
@@ -124,56 +141,38 @@ def comprar_produto() -> None:
 
 
 def visualizar_carrinho() -> None:
-    if len(carrinho) > 0:
-        print('Produtos no carrinho.')
-
-        for produto in carrinho.keys():
-            print(f'{produto.nome}\n'
-                  f'Quantidade: {carrinho.get(produto)}\n'
-                  '----------------------------------')
-            sleep(1)
-    else:
-        print('Ainda não há produtos no carrinho.')
+    Carrinho.visualizar()
     sleep(1)
     menu()
 
 
 def fechar_pedido() -> None:
-    if len(carrinho) > 0:
-        valor_total: float = 0
+    valor = Carrinho.valor()
 
-        print('Produtos do carrinho')
-
-        for item in carrinho.items():
-            print(f'{item[0]}\n'
-                  f'Quantidade: {item[1]}')
-
-            valor_total += item[0].preco * item[1]
-            print('------------------')
-            sleep(1)
-
-        print(f'Sua fatura é de {coin_float_to_str(valor_total)}\n'
+    if valor > 0:
+        print(f'Sua fatura é de {coin_float_to_str(valor)}\n'
               'Volte sempre!')
 
-        carrinho.clear()
-        sleep(3)
+        Carrinho._esvaziar()
     else:
         print('Ainda não há produtos no carrinho.')
-    sleep(1)
+    sleep(.5)
     menu()
 
 
-def pegar_prod_por_codigo(codigo: int) -> Produto:
+def __pegar_prod_por_codigo(codigo: int) -> Produto:
     for produto in produtos:
         if produto.codigo == codigo:
             return produto
     return None
 
+
 opcoes: dict = {1: cadastrar_produto,
                 2: listar_produtos,
                 3: comprar_produto,
-                4: visualizar_carrinho,
-                5: fechar_pedido}
+                4: remover_produto,
+                5: visualizar_carrinho,
+                6: fechar_pedido}
 
 if __name__ == '__main__':
     main()

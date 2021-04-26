@@ -1,4 +1,3 @@
-from typing import Counter
 from utils.helper import coin_float_to_str
 
 class Produto:
