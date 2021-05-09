@@ -27,10 +27,28 @@ class Cliente:
 
     @property
     def data_nasc(self: object) -> str:
+        """Recebe a data de nascimento no formato date
+        e a retorna no formato 'dd/mm/aaaa'.
+
+        Args:
+            self (object): objeto.
+
+        Returns:
+            str: 'dd/mm/aaaa'.
+        """
         return date_to_str(self.__data_nasc)
 
     @property
     def data_cad(self: object) -> str:
+        """Recebe a data de cadastro no formato date
+        e a retorna no formato 'dd/mm/aaaa'.
+
+        Args:
+            self (object): objeto.
+
+        Returns:
+            str: 'dd/mm/aaaa'.
+        """
         return date_to_str(self.__data_cad)
 
     def __str__(self: object) -> str:
