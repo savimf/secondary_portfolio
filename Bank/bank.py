@@ -9,13 +9,22 @@ from time import sleep
 from models.cliente import Cliente
 from models.conta import Conta
 
+# lista para armazenar as contas
 contas: list = []
 
+
 def main() -> None:
+    """Função responsável pela execução do programa; chama a
+    função menu()."""
     menu()
 
 
 def menu() -> None:
+    """Função responsável pela exibição e execução do menu.
+    Após exibição, solicita ao usuário que insira uma das
+    opções apresentadas e utiliza a entrada para chamar a
+    função correspondente.
+    """
     print('======================\n'
           '======== ATM =========\n'
           '====== Savi Bank =====\n'
@@ -44,6 +53,10 @@ def menu() -> None:
 
 
 def criar_conta() -> None:
+    """Função que solicita ao usuário os dados necessários
+    para a criação de uma conta (nome, CPF e data de nas-
+    cimento). Ao final, a mesma é inserida à lista 'contas'.
+    """
     print('Informe os dados do cliente.')
 
     cliente: Cliente = Cliente(input('Nome do cliente: '),
@@ -58,10 +71,15 @@ def criar_conta() -> None:
 
 
 def saque() -> None:
+    """Se len(contas) > 0, solicita ao usuário o número da
+    conta e, caso presente em 'contas', solicitará o valor
+    do saque, repassando-o ao método .sacar(), da classe
+    Conta.
+    """
     if len(contas) > 0:
         conta: Conta = buscar_conta_numero(
             int(input('Informe o número da sua conta: '))
-            )
+        )
 
         if conta:
             conta.sacar(
@@ -76,10 +94,15 @@ def saque() -> None:
 
 
 def deposito() -> None:
+    """Se len(contas) > 0, solicita ao usuário o número da
+    conta e, caso presente em 'contas', solicitará o valor
+    do depósito, repassando-o ao método .depositar(), da
+    classe Conta.
+    """
     if len(contas) > 0:
         conta: Conta = buscar_conta_numero(
             int(input('Informe o número da conta: '))
-            )
+        )
 
         if conta:
             conta.depositar(
@@ -94,6 +117,13 @@ def deposito() -> None:
 
 
 def transferencia() -> None:
+    """Se len(contas) > 0, solicita ao usuário o número
+    da conta de origem e, caso presente em 'contas', so-
+    licitará o número da conta de destino. Se ambas exis-
+    tirem, o valor da transferência deve ser informado e
+    todas as informações serão repassadas ao método
+    .transferir(), da classe Conta.
+    """
     if len(contas) > 0:
         c_origem: Conta = buscar_conta_numero(
             int(input('Informe o número da conta de destino: '))
@@ -118,6 +148,9 @@ def transferencia() -> None:
 
 
 def listar_contas() -> None:
+    """Se len(contas) > 0, exibirá ao usuário as
+    contas listadas em 'contas'.
+    """
     if len(contas) > 0:
         print('= Listagem de contas =')
 
@@ -132,6 +165,19 @@ def listar_contas() -> None:
 
 
 def buscar_conta_numero(n: int) -> Conta:
+    """Recebe um inteiro (número da conta) e, caso
+    len(contas) > 0, retornará a conta corresponden-
+    te ao número informado; caso contrário retornará
+    None.
+
+    Args:
+        n (int): número da conta a ser procurada.
+
+    Returns:
+        Conta: conta associada ao número de entrada.
+        Caso nenhuma seja encontrada, o retorno será
+        None.
+    """
     c: Conta = None
 
     if len(contas) > 0:
@@ -141,6 +187,8 @@ def buscar_conta_numero(n: int) -> Conta:
     return c
 
 
+# dicionário para armazenar as funções
+# que compõem o menu de opções
 opts: dict = {1: criar_conta,
               2: saque,
               3: deposito,
