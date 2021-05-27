@@ -1,3 +1,4 @@
+from datetime import date
 from models.cliente import Cliente
 from utils.helper import coin_float_to_str
 
@@ -11,6 +12,10 @@ class Conta:
         self.__saldo: float = 0.
         self.__limite: float = 100.
         self.__saldo_total: float = self._calc_saldo_total
+        self._transacoes: list = [
+            f'Data: {date.today()} - Conta de código {self.numero} criada.'
+        ]
+
         Conta.codigo += 1
 
     @property
@@ -63,21 +68,27 @@ class Conta:
         """
         return self.saldo + self.limite
 
-    def depositar(self: object, valor: float) -> None:
-        """Dado valor > 0, acrescenta-o ao saldo da conta
-        e atualiza o saldo total.
+    def _ext_saque(self: object, v: float) -> None:
+        self._transacoes.append(
+            f'Data: {date.today()} - Saque de '
+            f'{coin_float_to_str(v)} realizado.'
+        )
 
-        Args:
-            self (object): objeto (conta).
-            valor (float): valor a ser acrescido à conta.
-        """
-        if valor > 0:
-            self.saldo += valor
-            self.saldo_total = self._calc_saldo_total
+    def _ext_deposito(self: object, v: float) -> None:
+        self._transacoes.append(
+            f'Data: {date.today()} - Depósito de '
+            f'{coin_float_to_str(v)} realizado.'
+        )
 
-            print('Operação realizada com sucesso.')
-        else:
-            print('Valor inválido.')
+    def _ext_transferencia(self: object,
+                           c_destino: int,
+                           v: float) -> None:
+
+        self._transacoes.append(
+            f'Data: {date.today()} - Transferência de '
+            f'{coin_float_to_str(v)} realizada. '
+            f'Num. conta de destino: {c_destino}'
+        )
 
     def sacar(self: object, valor: float) -> None:
         """Dado saldo_total >= valor > 0, se saldo >=
@@ -99,9 +110,29 @@ class Conta:
 
             self.saldo_total = self._calc_saldo_total
 
+            self._ext_saque(valor)
+
             print('Operação realizada com sucesso.')
         else:
             print('Falha ao realizar saque. Favor verificar valor e saldo.')
+
+    def depositar(self: object, valor: float) -> None:
+        """Dado valor > 0, acrescenta-o ao saldo da conta
+        e atualiza o saldo total.
+
+        Args:
+            self (object): objeto (conta).
+            valor (float): valor a ser acrescido à conta.
+        """
+        if valor > 0:
+            self.saldo += valor
+            self.saldo_total = self._calc_saldo_total
+
+            self._ext_deposito(valor)
+
+            print('Operação realizada com sucesso.')
+        else:
+            print('Valor inválido.')
 
     def transferir(self: object, destino: object, valor: float) -> None:
         """Se 0 < valor <= saldo_total (conta de origem), de-
@@ -128,6 +159,18 @@ class Conta:
             destino.saldo += valor
             destino.saldo_total = destino._calc_saldo_total
 
+            self._ext_transferencia(destino.numero, valor)
+
             print('Operação realizada com sucesso.')
         else:
             print('Falha ao realizar transferência. Favor verificar valor e saldo.')
+
+    def checar_saldo(self: object) -> None:
+        print(f'Saldo total: {coin_float_to_str(self.saldo_total)}')
+
+    def extrato(self: object) -> None:
+        print('Extrato\n'
+              '----------')
+
+        for transacao in self._transacoes:
+            print(transacao)

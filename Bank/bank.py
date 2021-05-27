@@ -36,13 +36,14 @@ def menu() -> None:
           '3 - Realizar depósito\n'
           '4 - Realizar transferência\n'
           '5 - Listar contas\n'
-          '6 - Sair do sistema')
+          '6 - Extrato\n'
+          '7 - Sair do sistema')
 
     opt: int = int(input())
 
-    if opt in range(1, 6):
+    if opt in range(1, 7):
         opts[opt]()
-    elif opt == 6:
+    elif opt == 7:
         print('Volte sempre!')
         sleep(1)
         exit(0)
@@ -164,6 +165,22 @@ def listar_contas() -> None:
     menu()
 
 
+def extrato() -> None:
+    if len(contas) > 0:
+        conta: Conta = buscar_conta_numero(
+            int(input('Informe o número da conta: '))
+        )
+
+        if conta:
+            conta.extrato()
+        else:
+            print('Conta não encontrada.')
+    else:
+        print('Ainda não há contas cadastradas.')
+    sleep(1)
+    menu()
+
+
 def buscar_conta_numero(n: int) -> Conta:
     """Recebe um inteiro (número da conta) e, caso
     len(contas) > 0, retornará a conta corresponden-
@@ -193,7 +210,8 @@ opts: dict = {1: criar_conta,
               2: saque,
               3: deposito,
               4: transferencia,
-              5: listar_contas}
+              5: listar_contas,
+              6: extrato}
 
 if __name__ == '__main__':
     main()
